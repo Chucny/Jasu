@@ -1,6 +1,7 @@
 import time
 import requests
-
+import math
+import random
 # jasu programming language
 
 
@@ -20,7 +21,7 @@ def eval_expr(expr):
     # Replace variables safely
     for name, value in variables.items():
         expr = expr.replace(name, repr(value))
-    return eval(expr)
+    return eval(expr, {"__builtins__": None}, python_functions | variables)
 
 def run_block(lines):
     i = 0
@@ -363,22 +364,69 @@ def run_block(lines):
                 print("Error in while loop:", e)
 
         i += 1
-def define_function(fname, *params, script=""):
-    """
-    Dynamically define a function in Jasu interpreter.
+python_functions = {}
 
-    fname : str -> function name
-    *params : list of variable names (strings)
-    script : str -> multiline python code as the function body
-    """
-    # Remove None parameters
+def define_function(fname, *params, script=""):
     params = [p for p in params if p is not None]
-    
-    # Split script into lines
-    block = script.strip().splitlines()
-    
-    # Register function in interpreter
-    functions[fname] = (params, block)
+
+    def pyfunc(*args):
+        local_vars = dict(zip(params, args))
+
+        code = script.strip().split(";")
+        result = None
+
+        for line in code:
+            line = line.strip()
+            if not line:
+                continue
+
+            if line.startswith("return"):
+                expr = line[6:].strip("() ")
+                result = eval(expr, globals(), local_vars)
+                return result
+            else:
+                exec(line, globals(), local_vars)
+
+        return result
+
+    python_functions[fname] = pyfunc
+
+
+
+
+
+
+define_function("sin", "a", script="return(math.sin(a))")
+define_function("cos", "a", script="return(math.cos(a))")
+define_function("tan", "a", script="return(math.tan(a))")
+
+define_function("sqrt", "a", script="return(math.sqrt(a))")
+define_function("log", "a", script="return(math.log(a))")
+
+define_function("floor", "a", script="return(math.floor(a))")
+define_function("ceil", "a", script="return(math.ceil(a))")
+
+define_function("abs", "a", script="return(abs(a))")
+define_function("round", "a", script="return(round(a))")
+
+define_function("max", "a", "b", script="return(max(a,b))")
+define_function("min", "a", "b", script="return(min(a,b))")
+
+define_function("randint", "a", "b", script="return(random.randint(a,b))")
+define_function("random", script="return(random.random())")
+define_function("choice", "a", script="return(random.choice(a))")
+
+define_function("len", "a", script="return(len(a))")
+
+define_function("int", "a", script="return(int(a))")
+define_function("float", "a", script="return(float(a))")
+define_function("str", "a", script="return(str(a))")
+
+define_function("time", script="return(time.time())")
+
+define_function("pi", script="return(math.pi)")
+
+
 
 
 
@@ -386,3 +434,23 @@ def run_jasu(code):
     lines = code.splitlines()
     run_block(lines)
 
+
+import sys
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python compiler.py file.jasu")
+    else:
+        filename = sys.argv[1]
+
+        if filename.endswith(".jasu"):
+            with open(filename, "r", encoding="utf-8") as f:
+                code = f.read()
+
+            run_jasu(code)
+        else:
+            print("Only .jasu files supported")
+
+
+
+input()
