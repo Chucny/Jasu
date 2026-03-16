@@ -16,6 +16,7 @@
     <li>String manipulation: <code>.replace(old, new)</code> and slicing <code>[start:end]</code></li>
     <li>HTTP requests: <code>fetch(url, method)</code></li>
     <li>Control flow: <code>#return()</code> and <code>#break()</code></li>
+    <li>Lots of other funtions, sin, cos, abs and random functions</li>
 </ul>
 
 <h2>Syntax Reference</h2>
@@ -90,7 +91,7 @@ write(html[0:100]);
 write("World", color=green);
 </code></pre>
 
-<p>Jasu allows embedding any function call inside a variable, supports zero-based indexing, and lets you define dynamic functions using <code>define[...]</code>. The compiler syntax is: <code>run_jasu(""" code """)</code></p>
+<p>Jasu allows embedding any function call inside a variable, supports zero-based indexing, and lets you define dynamic functions using <code>define[...]</code>. The compiler syntax is: <br><code>python compiler.py code.jasu</code></p><br>
 <br><strong>Copyright &copy; Chucny 2026</strong>
 
 </body>
